@@ -22,6 +22,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 interface PostProps {
   author: { username: string; avatar: string; id: string };
@@ -60,6 +61,7 @@ const Post: FC<PostProps> = ({
   images,
   likes,
 }) => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = () => {
@@ -76,15 +78,18 @@ const Post: FC<PostProps> = ({
       <CardHeader
         sx={{ color: "black", fontSize: 40, fontWeight: "medium" }}
         avatar={
-          <Avatar
-            sx={{ width: "45px", height: "45px", outline: "solid 1px #aaa" }}
-            alt={author.username}
-            src={
-              author.avatar
-                ? author.avatar
-                : "https://cdn-icons-png.flaticon.com/512/3237/3237472.png"
-            }
-          />
+          <Link to={`/profile/${author.id}`}>
+            <Avatar
+              sx={{ width: "45px", height: "45px", outline: "solid 1px #aaa" }}
+              alt={author.username}
+              src={
+                author.avatar
+                  ? author.avatar
+                  : "https://cdn-icons-png.flaticon.com/512/3237/3237472.png"
+              }
+              // onClick={() => navigate(`/profile/${author.id}`)}
+            />
+          </Link>
         }
         action={
           <IconButton aria-label="settings" sx={{}}>

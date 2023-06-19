@@ -7,10 +7,13 @@ import {
   Message,
   Groups,
 } from "@mui/icons-material";
+import { useAuth } from "./Auth";
+import { Link } from "react-router-dom";
 
 interface NavbarProps {}
 
 const Navbar: FC<NavbarProps> = () => {
+  const { user } = useAuth();
   return (
     <Box
       sx={{
@@ -45,39 +48,43 @@ const Navbar: FC<NavbarProps> = () => {
             pb: 1,
           }}
         >
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Home sx={{ width: 30, height: 30, mr: 2, color: "#056BE1" }} />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
+          <Link to="/" style={{ width: "100%" }}>
+            <Button
+              sx={{
+                width: "100%",
+                bgcolor: "#F0F2F5",
+                justifyContent: "start",
+                color: "#333",
+              }}
             >
-              Trang chủ
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
+              <Home sx={{ width: 30, height: 30, mr: 2, color: "#056BE1" }} />
+              <Typography
+                sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
+              >
+                Trang chủ
+              </Typography>
+            </Button>
+          </Link>
+          <Link to={`/profile/${user?.id}`} style={{ width: "100%" }}>
+            <Button
+              sx={{
+                width: "100%",
+                bgcolor: "#F0F2F5",
+                justifyContent: "start",
+                color: "#333",
+              }}
             >
-              Thanh Tam
-            </Typography>
-          </Button>
+              <Avatar
+                sx={{ width: 30, height: 30, mr: 2 }}
+                src={user?.avatar}
+              />
+              <Typography
+                sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
+              >
+                {user?.username}
+              </Typography>
+            </Button>
+          </Link>
         </Box>
       </Box>
       <Box sx={{ pt: 0, pl: 2, pr: 2, pb: 2 }}>

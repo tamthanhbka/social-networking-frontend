@@ -1,7 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Register, Login } from "../pages";
-import { AuthLayout, HomeLayout, PostLayout, ProfileLayout } from "../layouts";
-import { homeLoader } from "../loader";
+import {
+  AuthLayout,
+  HomeLayout,
+  PostLayout,
+  ProfileLayout,
+  SubHomeLayout,
+} from "../layouts";
+import { getListPosts, getPosts } from "../api";
 
 const router = createBrowserRouter([
   {
@@ -9,21 +15,35 @@ const router = createBrowserRouter([
     element: <HomeLayout />,
     children: [
       {
-        path: "/profile",
+        path: "/profile/:id",
         element: <ProfileLayout />,
+        children: [
+          {
+            path: "",
+            element: <PostLayout fn={getPosts} />,
+          },
+          {
+            path: "follower",
+            element: <>Người theo dõi</>,
+          },
+          {
+            path: "images",
+            element: <>Ảnh của bạn</>,
+          },
+        ],
       },
       {
         path: "/",
-        element: <PostLayout />,
-        loader: homeLoader,
+        element: <SubHomeLayout />,
       },
     ],
   },
   {
     element: <AuthLayout />,
+    path: "/",
     children: [
-      { path: "/register", element: <Register /> },
-      { path: "/login", element: <Login /> },
+      { path: "register", element: <Register /> },
+      { path: "login", element: <Login /> },
     ],
   },
 ]);

@@ -6,17 +6,29 @@ import { useAuth } from "../components/Auth";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
   useEffect(() => {
-    if (!login) navigate("/login");
-  }, [login]);
-  if (!login) return <></>;
+    if (!login && !loading) navigate("/login");
+  }, [login, loading]);
+  if (!login || loading)
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100vh",
+          position: "fixed",
+          background:
+            "rgba(0, 0, 0, 0.834) url('https://media.giphy.com/media/8agqybiK5LW8qrG3vJ/giphy.gif') center no-repeat",
+          zIndex: 1,
+        }}
+      ></div>
+    );
   return (
     <Box flexGrow={1} display="flex" flexDirection="column">
       <Header />
       <Box display="flex" sx={{ bgcolor: "#F0F2F5" }}>
         <Nav />
-        <Box display="flex" sx={{ ml: "25%", width: "75%" }}>
+        <Box display="flex" sx={{ flex: 1, ml: "25%" }}>
           <Outlet />
         </Box>
       </Box>

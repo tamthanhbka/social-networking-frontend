@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Box, Button, TextField, Typography, styled } from "@mui/material";
-import { Link as RLink } from "react-router-dom";
+import { Link as RLink, useNavigate } from "react-router-dom";
+import { AxiosError, signup } from "../api";
+import { useAuth } from "../components/Auth";
+import { signupValidate } from "../validate";
 const CssTextField = styled(TextField)({
   "& label, & label.Mui-focused": {
     color: "black",
@@ -28,7 +32,31 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+  const navigate = useNavigate();
+  const { action, login } = useAuth();
+  useEffect(() => {
+    if (login) {
+      navigate("/");
+    }
+  }, [login]);
+  const handleSignup = async () => {
+    try {
+      const error = signupValidate(password, confirmPass);
+      if (error) throw error;
+      const data = await signup(email, phone, password, username);
+      action.login(data);
+    } catch (error: any) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message, {
+          autoClose: 2000,
+        });
+      } else {
+        toast.error(error, { autoClose: 2000 });
+      }
+    }
+  };
   return (
     <div className="register-form" style={{ backgroundColor: "white" }}>
       <Typography
@@ -50,6 +78,10 @@ export default function Register() {
           className="text-field"
           fullWidth
           required
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
         />
         <CssTextField
           label="Phone Number"
@@ -57,6 +89,21 @@ export default function Register() {
           className="text-field"
           fullWidth
           required
+          value={phone}
+          onChange={(e) => {
+            setPhone(e.target.value);
+          }}
+        />
+        <CssTextField
+          label="Username"
+          variant="standard"
+          className="text-field"
+          fullWidth
+          required
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value);
+          }}
         />
         <CssTextField
           label="Password"
@@ -65,6 +112,10 @@ export default function Register() {
           className="text-field"
           fullWidth
           required
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
         />
         <CssTextField
           label="Confirm Password"
@@ -73,6 +124,10 @@ export default function Register() {
           className="text-field"
           fullWidth
           required
+          value={confirmPass}
+          onChange={(e) => {
+            setConfirmPass(e.target.value);
+          }}
         />
       </Box>
       <Box sx={{ m: 2, flex: 1 }}>
@@ -88,6 +143,7 @@ export default function Register() {
               backgroundColor: "#0068e8",
             },
           }}
+          onClick={handleSignup}
         >
           Register
         </Button>

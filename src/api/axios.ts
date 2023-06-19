@@ -18,6 +18,17 @@ const onResponse = (response: AxiosResponse) => {
   }
   return response;
 };
+// const onRejected = (error: AxiosError<any, any>) => {
+//   const response = error.response;
+//   const type = response?.data.type;
+//   if (type === "token") {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("user");
+//   }
+// };
 axiosInstance.interceptors.request.use(onRequest);
-axiosInstance.interceptors.response.use(onResponse);
+axiosInstance.interceptors.response.use(
+  onResponse
+  // , onRejected
+);
 export { axiosInstance, AxiosError };
