@@ -18,9 +18,6 @@ const Info: FC<InfoProps> = ({ user }) => {
     });
     return person;
   });
-  if (!followers.length) {
-    return <>Khong co nguoi theo doi</>;
-  }
 
   return (
     <>
