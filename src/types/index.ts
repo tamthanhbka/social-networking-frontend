@@ -11,3 +11,11 @@ export type PostType = {
   }[];
   images: { link: string; createdAt: string }[];
 };
+
+export type GroupType = {
+  id: string;
+  groupName: string;
+  status: string;
+  admin: string;
+  avatar: string;
+};

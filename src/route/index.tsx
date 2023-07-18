@@ -8,6 +8,8 @@ import {
   SubHomeLayout,
 } from "../layouts";
 import { getListPosts, getPosts } from "../api";
+import Group from "../layouts/subs/Group";
+import GroupPostLayout from "../layouts/subs/GroupPost";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +31,24 @@ const router = createBrowserRouter([
           {
             path: "images",
             element: <>Ảnh của bạn</>,
+          },
+        ],
+      },
+      {
+        path: "/group/:id",
+        element: <Group />,
+        children: [
+          {
+            path: "",
+            element: <GroupPostLayout />,
+          },
+          {
+            path: "member",
+            element: <>Thanh vien</>,
+          },
+          {
+            path: "requestJoinGroup",
+            element: <>Yeu cau duyet</>,
           },
         ],
       },

@@ -1,13 +1,13 @@
 import { Box, Button, Typography, styled } from "@mui/material";
-import type { FC } from "react";
+import { useState, type FC, useEffect } from "react";
 import { User, useAuth } from "../../components/Auth";
 import { ConnectWithoutContact, Edit, PersonAdd } from "@mui/icons-material";
 import { Tabs } from "../../components";
 import { Outlet, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
-import { Info } from "../../components";
-import { getInfo } from "../../api";
+import { Info, EditInfo } from "../../components";
+import { followUser, getInfo, unfollowUser } from "../../api";
 
 interface ProfileLayoutProps {}
 
@@ -26,21 +26,42 @@ const FollowButton = styled(Button)({
 });
 
 const ProfileLayout: FC<ProfileLayoutProps> = () => {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const { user } = useAuth();
-  if (!id) {
-    return <>Khong co param</>;
-  }
-
-  const { data: person } = useQuery<User>({
+  const [open, setOpen] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
+  const { data: person, refetch } = useQuery<User>({
     queryKey: [`person${id}`],
     queryFn: () => getInfo(id),
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (person && user)
+      setIsFollowed(
+        person.followers.some((u) => {
+          const condition = u.id === user.id;
+          return condition;
+        })
+      );
+  }, [person]);
+
+  const { mutate: handleFollow } = useMutation(() =>
+    followUser(id).then(() => refetch())
+  );
+  const { mutate: handleUnfollow } = useMutation(() =>
+    unfollowUser(id).then(() => refetch())
+  );
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   if (!person) {
     return <>Khong tim thay nguoi dung</>;
   }
-
   return (
     <Box
       display="flex"
@@ -62,7 +83,12 @@ const ProfileLayout: FC<ProfileLayoutProps> = () => {
             <Info user={person} />
             <Box display="flex" flex={1} justifyContent="end" alignItems="end">
               {person.id === user?.id ? (
-                <EditButton sx={{ bgcolor: "#eae9e9" }}>
+                <EditButton
+                  sx={{ bgcolor: "#eae9e9" }}
+                  onClick={() => {
+                    handleOpen();
+                  }}
+                >
                   <Edit sx={{ color: "black" }} />
                   <Typography
                     sx={{
@@ -76,7 +102,13 @@ const ProfileLayout: FC<ProfileLayoutProps> = () => {
                   </Typography>
                 </EditButton>
               ) : (
-                <FollowButton sx={{ bgcolor: "#2879db", gap: 1 }}>
+                <FollowButton
+                  sx={{ bgcolor: "#2879db", gap: 1 }}
+                  onClick={() => {
+                    const handle = isFollowed ? handleUnfollow : handleFollow;
+                    handle();
+                  }}
+                >
                   <PersonAdd sx={{ color: "#ffffff" }} />
                   <Typography
                     sx={{
@@ -86,7 +118,7 @@ const ProfileLayout: FC<ProfileLayoutProps> = () => {
                       color: "#ffffff",
                     }}
                   >
-                    {user?.followers.includes(id) ? "Bỏ theo dõi" : "Theo dõi"}
+                    {isFollowed ? "Bỏ theo dõi" : "Theo dõi"}
                   </Typography>
                 </FollowButton>
               )}
@@ -100,6 +132,14 @@ const ProfileLayout: FC<ProfileLayoutProps> = () => {
           </Box>
         </Box>
       </Box>
+      {open && (
+        <EditInfo
+          user={person}
+          open={open}
+          onClose={handleClose}
+          onUpdateSuccess={refetch}
+        />
+      )}
     </Box>
   );
 };

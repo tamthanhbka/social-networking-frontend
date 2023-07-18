@@ -25,7 +25,11 @@ const ContactItem: FC<ContactItemProps> = ({ user }) => {
           outline: "solid 1px #aaa",
           mr: 2,
         }}
-        src={user.avatar}
+        src={
+          user.avatar
+            ? user.avatar
+            : "https://cdn-icons-png.flaticon.com/512/3237/3237472.png"
+        }
       />
       <Typography
         sx={{

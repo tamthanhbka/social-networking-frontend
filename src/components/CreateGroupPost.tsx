@@ -1,3 +1,4 @@
+import { FC, useState, useRef } from "react";
 import {
   AddPhotoAlternate,
   Close,
@@ -14,26 +15,19 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import { FC, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { User } from "./Auth";
-import { createPost } from "../api";
-
+import { User, useAuth } from "./Auth";
 import { toast } from "react-toastify";
+import { createPostOfGroup } from "../api";
 
-interface CreatePostProps {
-  user: User;
+interface CreateGroupPostProps {
   onCreatePostSuccess?: () => void;
 }
-const CustomButton = styled(Button)({
-  "&:hover": {
-    backgroundColor: "#1A6ED8",
-    color: "white",
-  },
-});
 
-const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
+const CreateGroupPost: FC<CreateGroupPostProps> = ({ onCreatePostSuccess }) => {
+  const { id: groupId } = useParams();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [image, setImg] = useState("");
@@ -42,15 +36,16 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
   const handleOpen = () => {
     setOpen(true);
   };
-  const { mutate: handleCreatePost } = useMutation(() =>
-    createPost(content, image)
+  const { mutate: handleCreatePost } = useMutation(async () => {
+    if (!groupId) throw new Error("Group undefined!");
+    return createPostOfGroup(content, groupId)
       .then(handleClose)
       .then(onCreatePostSuccess)
       .then(() => setContent(""))
       .catch((e) => {
         toast.error(e.message);
-      })
-  );
+      });
+  });
 
   return (
     <Paper
@@ -104,7 +99,7 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
           }}
           onClick={handleOpen}
         >
-          {user?.username} ơi, bạn đang nghĩ gì thế?
+          Bạn viết gì đi...
         </Button>
       </Box>
       <Box
@@ -211,7 +206,7 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
             }}
           >
             <Input
-              placeholder={`${user?.username} ơi, bạn đang nghĩ gì thế?`}
+              placeholder={`Bạn viết gì đi...`}
               disableUnderline
               fullWidth
               multiline
@@ -253,12 +248,17 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
               justifyContent: "center",
             }}
           >
-            <CustomButton
-              sx={{ bgcolor: "#2077e1", color: "white", width: "80%" }}
+            <Button
+              sx={{
+                bgcolor: "#2077e1",
+                color: "white",
+                width: "80%",
+                "&:hover": { bgcolor: "#1d6fd4" },
+              }}
               onClick={() => handleCreatePost()}
             >
               Đăng
-            </CustomButton>
+            </Button>
           </Box>
         </Box>
       </Modal>
@@ -266,4 +266,4 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
   );
 };
 
-export default CreatePost;
+export default CreateGroupPost;

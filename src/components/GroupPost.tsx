@@ -23,8 +23,10 @@ import {
 import { styled } from "@mui/material/styles";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GroupType } from "../types";
+import { useAuth } from "./Auth";
 
-interface PostProps {
+interface GroupPostProps {
   author: { username: string; avatar: string; id: string };
   createdAt: string;
   content: string;
@@ -36,6 +38,7 @@ interface PostProps {
     userId: string;
   }[];
   images: { link: string; createdAt: string }[];
+  group: GroupType;
 }
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -71,15 +74,16 @@ const renderTime = (createdAt: string) => {
   return html;
 };
 
-const Post: FC<PostProps> = ({
+const GroupPost: FC<GroupPostProps> = ({
   author,
   comments,
   content,
   createdAt,
   images,
   likes,
+  group,
 }) => {
-  console.log(author);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [expanded, setExpanded] = React.useState(false);
 
@@ -125,7 +129,19 @@ const Post: FC<PostProps> = ({
             {author.username}
           </Typography>
         }
-        subheader={renderTime(createdAt)}
+        subheader={
+          <Box display="flex">
+            {" "}
+            <Typography
+              sx={{ bgcolor: "#E7F3FF", color: "#1875F0", fontSize: 13, mr: 1 }}
+            >
+              {group.admin === user?.id ? "Quan tri vien" : "Thanh vien"}
+            </Typography>{" "}
+            <Typography sx={{ fontSize: 13 }}>
+              {renderTime(createdAt)}
+            </Typography>
+          </Box>
+        }
       />
       <CardContent>
         <Typography
@@ -201,4 +217,4 @@ const Post: FC<PostProps> = ({
   );
 };
 
-export default Post;
+export default GroupPost;

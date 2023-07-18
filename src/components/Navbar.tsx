@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { Avatar, Box, Button, Typography } from "@mui/material";
 import {
   Home,
@@ -6,14 +6,33 @@ import {
   People,
   Message,
   Groups,
+  Add,
 } from "@mui/icons-material";
 import { useAuth } from "./Auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getListGroup } from "../api";
+import { useQuery } from "@tanstack/react-query";
+import { GroupType } from "../types";
+import { CreateGroup } from "../components";
 
 interface NavbarProps {}
 
 const Navbar: FC<NavbarProps> = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const { data: groups } = useQuery<GroupType[]>({
+    queryKey: ["groups"],
+    queryFn: () => getListGroup(),
+    initialData: [],
+    refetchOnWindowFocus: false,
+  });
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <Box
       sx={{
@@ -165,151 +184,65 @@ const Navbar: FC<NavbarProps> = () => {
             pb: 1,
           }}
         >
+          {groups.map((group) => {
+            return (
+              <Button
+                key={group.id}
+                sx={{
+                  width: "100%",
+                  bgcolor: "#F0F2F5",
+                  justifyContent: "start",
+                  color: "#333",
+                }}
+                onClick={() => {
+                  navigate(`/group/${group.id}`);
+                }}
+              >
+                <Avatar
+                  sx={{ width: 30, height: 30, mr: 2 }}
+                  src={group.avatar}
+                />
+                <Typography
+                  sx={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    textTransform: "initial",
+                  }}
+                >
+                  {group.groupName}
+                </Typography>
+              </Button>
+            );
+          })}
+
           <Button
             sx={{
               width: "100%",
-              bgcolor: "#F0F2F5",
+              bgcolor: "#e6eff8",
               justifyContent: "start",
               color: "#333",
+              "&:hover": { bgcolor: "#dbe8f5" },
             }}
+            onClick={() => handleOpen()}
           >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
-            >
-              Điểm rèn luyện HUST
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
-            >
-              HEDSPI.K64
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
-            >
-              Việt Nhật 02-K64
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
-            >
-              Weibo Việt Nam
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
-            >
-              Việt Nhật 02-K64
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
-            >
-              Việt Nhật 02-K64
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar
-              sx={{ width: 30, height: 30, mr: 2 }}
-              src="https://scontent.fhan14-1.fna.fbcdn.net/v/t39.30808-6/347635090_980191409821605_9083187072725207852_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=aR-DpeP5g4cAX_DyxZ9&_nc_ht=scontent.fhan14-1.fna&oh=00_AfDJDU8OtgL2SLXcNoIxxGR6OEb1UssKZjGcLn4o0XKnxQ&oe=646CBFA3"
-            />
-            <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
-            >
-              Việt Nhật 02-K64
-            </Typography>
-          </Button>
-          <Button
-            sx={{
-              width: "100%",
-              bgcolor: "#F0F2F5",
-              justifyContent: "start",
-              color: "#333",
-            }}
-          >
-            <Avatar sx={{ width: 30, height: 30, mr: 2, bgcolor: "#D8DADF" }}>
+            {/* <Avatar sx={{ width: 30, height: 30, mr: 2, bgcolor: "#D8DADF" }}>
               <Groups sx={{ color: "black" }} />
-            </Avatar>
+            </Avatar> */}
+            <Add sx={{ color: "#468fef", mr: 1 }}></Add>
             <Typography
-              sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
+              sx={{
+                fontSize: 14,
+                fontWeight: 500,
+                textTransform: "initial",
+                color: "#468fef",
+              }}
             >
-              Xem tất cả các nhóm
+              Tạo nhóm mới
             </Typography>
           </Button>
         </Box>
       </Box>
+      {open && <CreateGroup user={user} open={open} onClose={handleClose} />}
     </Box>
   );
 };

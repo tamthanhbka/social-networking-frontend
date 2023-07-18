@@ -1,17 +1,17 @@
 import { Box, Typography } from "@mui/material";
 import type { FC } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getListFollowers } from "../api";
-import { User } from "./Auth";
+import { User, useAuth } from "./Auth";
 import ContactItem from "./ContactItem";
+import { listFollowedPeople } from "../api";
 
 interface ContactProps {}
 
 const Contact: FC<ContactProps> = () => {
-  const { data: followers } = useQuery<User[]>({
-    queryKey: ["followers"],
-    queryFn: () => getListFollowers(),
-    initialData: [],
+  const { user } = useAuth();
+  const { data: followedPeople } = useQuery<User[]>({
+    queryKey: ["followedPeople"],
+    queryFn: () => listFollowedPeople(),
     refetchOnWindowFocus: false,
   });
   return (
@@ -40,9 +40,10 @@ const Contact: FC<ContactProps> = () => {
       </Typography>
       <Box display="flex" flexDirection="column" sx={{ mt: 1 }}>
         {/* Danh sach nguoi dang follow */}
-        {followers.map((follower, i) => (
-          <ContactItem key={i} user={follower} />
-        ))}
+        {followedPeople &&
+          followedPeople.map((person, i) => (
+            <ContactItem key={i} user={person} />
+          ))}
       </Box>
     </Box>
   );

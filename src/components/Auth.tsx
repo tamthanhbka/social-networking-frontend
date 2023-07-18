@@ -14,20 +14,20 @@ export type User = {
   phone: string;
   isActivated: boolean;
   email: string;
-  followers: string[];
+  followers: User[];
   createdAt: string;
   updatedAt: string;
   avatar: string;
 };
 type ContextPayloadType = {
   login: boolean;
-  action: { login: (user: any) => any; logout: Function };
+  action: { login: (user: any) => any; logout: Function; update: Function };
   user?: User;
   loading: boolean;
 };
 const AuthContext = createContext<ContextPayloadType>({
   login: false,
-  action: { login: () => {}, logout: () => {} },
+  action: { login: () => {}, logout: () => {}, update: () => {} },
   loading: true,
 });
 
@@ -47,6 +47,15 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         localStorage.removeItem("token");
         setLogin(false);
         setUser(undefined);
+      },
+      update: () => {
+        getMe()
+          .then((data) => {
+            action.login(data);
+          })
+          .catch(() => {
+            action.logout();
+          });
       },
     }),
     []

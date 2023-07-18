@@ -1,24 +1,15 @@
 import { Avatar, AvatarGroup, Box, Typography } from "@mui/material";
-import type { FC } from "react";
+import { type FC } from "react";
 import type { User } from "./Auth";
-import { useQuery } from "@tanstack/react-query";
-import { getInfo } from "../api";
+import { useNavigate } from "react-router-dom";
 
 interface InfoProps {
   user: User;
 }
 
 const Info: FC<InfoProps> = ({ user }) => {
-  const followerIds = user.followers;
-  const followers = followerIds.map((id) => {
-    const { data: person } = useQuery<User>({
-      queryKey: [`person${id}`],
-      queryFn: () => getInfo(id),
-      refetchOnWindowFocus: false,
-    });
-    return person;
-  });
-
+  const navigate = useNavigate();
+  const { followers } = user;
   return (
     <>
       <Box sx={{ p: 2 }}>
@@ -37,22 +28,32 @@ const Info: FC<InfoProps> = ({ user }) => {
         />
       </Box>
       <Box>
-        <Box sx={{ fontSize: 32, fontWeight: 900 }}>
-          {user?.username}
+        <Box>
+          <Typography sx={{ fontSize: 32, fontWeight: 900, color: "#313131" }}>
+            {user?.username}
+          </Typography>
           <Typography sx={{ fontSize: 16, fontWeight: 500, color: "#686565" }}>
             {user?.phone}
           </Typography>
           <Typography sx={{ fontSize: 16, fontWeight: 500, color: "#686565" }}>
-            {user?.followers.length} Nguoi theo doi
+            {followers.length} Nguoi theo doi
           </Typography>
         </Box>
-        <AvatarGroup
-          total={user?.followers.length}
-          sx={{ display: "-webkit-box" }}
-          max={6}
-        >
-          {followers.map((follower) => (
-            <Avatar alt={`${follower?.username}`} src={`${follower?.avatar}`} />
+        <AvatarGroup total={followers.length} sx={{ display: "-webkit-box" }}>
+          {followers.map((follower, i) => (
+            <Avatar
+              key={i}
+              alt={`${follower?.username}`}
+              src={`${follower?.avatar}`}
+              onClick={() => navigate(`/profile/${follower.id}`)}
+              sx={{
+                cursor: "pointer",
+                "&:hover": {
+                  transform: "scale(1.07)",
+                  boxShadow: "0px 0px 3px 3px rgba(230, 230, 229, 1)",
+                },
+              }}
+            />
           ))}
         </AvatarGroup>
       </Box>
