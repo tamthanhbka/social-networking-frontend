@@ -127,9 +127,7 @@ const ProfileLayout: FC<ProfileLayoutProps> = () => {
           <Tabs />
         </Box>
         <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-          <Box sx={{ width: "80%", justifyItems: "center" }}>
-            <Outlet />
-          </Box>
+          <Outlet />
         </Box>
       </Box>
       {open && (

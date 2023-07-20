@@ -10,6 +10,8 @@ import {
 import { getListPosts, getPosts } from "../api";
 import Group from "../layouts/subs/Group";
 import GroupPostLayout from "../layouts/subs/GroupPost";
+import { Follower, GroupMember, RequestJoinGroup } from "../components";
+import MessageLayout from "../layouts/subs/Message";
 
 const router = createBrowserRouter([
   {
@@ -22,11 +24,11 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <PostLayout fn={getPosts} />,
+            element: <PostLayout fn={getPosts} width="80%" />,
           },
           {
             path: "follower",
-            element: <>Người theo dõi</>,
+            element: <Follower />,
           },
           {
             path: "images",
@@ -44,13 +46,17 @@ const router = createBrowserRouter([
           },
           {
             path: "member",
-            element: <>Thanh vien</>,
+            element: <GroupMember />,
           },
           {
             path: "requestJoinGroup",
-            element: <>Yeu cau duyet</>,
+            element: <RequestJoinGroup />,
           },
         ],
+      },
+      {
+        path: "/messages",
+        element: <MessageLayout />,
       },
       {
         path: "/",

@@ -17,7 +17,7 @@ const GroupPostLayout: FC<GroupPostLayoutProps> = ({}) => {
     refetchOnWindowFocus: false,
   });
   const { data: group } = useQuery<GroupType>({
-    queryKey: ["group"],
+    queryKey: ["group", id],
     queryFn: () => getInfoGroup(id),
     refetchOnWindowFocus: false,
   });
@@ -25,15 +25,24 @@ const GroupPostLayout: FC<GroupPostLayoutProps> = ({}) => {
   if (!group) {
     return <></>;
   }
-  console.table(group);
 
   return (
-    <Box flexDirection="column" sx={{ display: "flex", flex: 1 }}>
-      {user && <CreateGroupPost onCreatePostSuccess={refetch} />}
-      <Box display="flex" flexDirection="column" alignItems="stretch">
-        {posts.map((post, i) => (
-          <GroupPost key={i} {...post} group={group} />
-        ))}
+    <Box
+      display="flex"
+      flexDirection={"column"}
+      width="100%"
+      alignItems="center"
+    >
+      <Box
+        flexDirection="column"
+        sx={{ display: "flex", flex: 1, width: "80%" }}
+      >
+        {user && <CreateGroupPost onCreatePostSuccess={refetch} />}
+        <Box display="flex" flexDirection="column" alignItems="stretch">
+          {posts.map((post, i) => (
+            <GroupPost key={i} {...post} group={group} />
+          ))}
+        </Box>
       </Box>
     </Box>
   );

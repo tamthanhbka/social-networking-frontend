@@ -1,14 +1,17 @@
 import { Avatar, AvatarGroup, Box, Typography } from "@mui/material";
 import type { FC } from "react";
 import { GroupType } from "../types";
-import { useAuth } from "./Auth";
+import { User, useAuth } from "./Auth";
+import { useNavigate } from "react-router-dom";
 
 interface GroupInfoProps {
   group?: GroupType;
+  listMember: User[];
 }
 
-const GroupInfo: FC<GroupInfoProps> = ({ group }) => {
+const GroupInfo: FC<GroupInfoProps> = ({ group, listMember }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   // const { id } = useParams() as { id: string };
   // const { data: group } = useQuery<GroupType>({
   //   queryKey: [`group${id}`],
@@ -56,26 +59,26 @@ const GroupInfo: FC<GroupInfoProps> = ({ group }) => {
           )}
 
           {/* <Typography sx={{ fontSize: 16, fontWeight: 500, color: "#686565" }}>
-            30 thanh vien
+            {listMember?.length} thanh vien
           </Typography> */}
         </Box>
-        {/* <AvatarGroup total={followers.length} sx={{ display: "-webkit-box" }}>
-      {followers.map((follower, i) => (
-        <Avatar
-          key={i}
-          alt={`${follower?.username}`}
-          src={`${follower?.avatar}`}
-          onClick={() => navigate(`/profile/${follower.id}`)}
-          sx={{
-            cursor: "pointer",
-            "&:hover": {
-              transform: "scale(1.07)",
-              boxShadow: "0px 0px 3px 3px rgba(230, 230, 229, 1)",
-            },
-          }}
-        />
-      ))}
-    </AvatarGroup> */}
+        <AvatarGroup total={listMember.length} sx={{ display: "-webkit-box" }}>
+          {listMember.map((member, i) => (
+            <Avatar
+              key={i}
+              alt={`${member?.username}`}
+              src={`${member?.avatar}`}
+              onClick={() => navigate(`/profile/${member.id}`)}
+              sx={{
+                cursor: "pointer",
+                "&:hover": {
+                  transform: "scale(1.07)",
+                  boxShadow: "0px 0px 3px 3px rgba(230, 230, 229, 1)",
+                },
+              }}
+            />
+          ))}
+        </AvatarGroup>
       </Box>
     </>
   );

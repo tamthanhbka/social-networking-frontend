@@ -6,6 +6,7 @@ import {
 } from "@mui/icons-material";
 import {
   Avatar,
+  Badge,
   Box,
   Button,
   IconButton,
@@ -19,7 +20,7 @@ import { Link, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { User, useAuth } from "./Auth";
 import { toast } from "react-toastify";
-import { createPostOfGroup } from "../api";
+import { createPostOfGroup, uploadImgs } from "../api";
 
 interface CreateGroupPostProps {
   onCreatePostSuccess?: () => void;
@@ -30,18 +31,27 @@ const CreateGroupPost: FC<CreateGroupPostProps> = ({ onCreatePostSuccess }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
-  const [image, setImg] = useState("");
+  const [image, setImage] = useState<File[]>([]);
   const handleClose = () => setOpen(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputContentRef = useRef<HTMLInputElement>(null);
   const handleOpen = () => {
     setOpen(true);
+    setTimeout(() => {
+      inputContentRef.current?.focus();
+    }, 1000);
   };
-  const { mutate: handleCreatePost } = useMutation(async () => {
+  const { mutate: handleCreatePost } = useMutation(async (imgs: File[]) => {
     if (!groupId) throw new Error("Group undefined!");
-    return createPostOfGroup(content, groupId)
+    const data = await uploadImgs(imgs);
+    if (!data) return;
+    return createPostOfGroup(content, groupId, data)
       .then(handleClose)
       .then(onCreatePostSuccess)
-      .then(() => setContent(""))
+      .then(() => {
+        setContent("");
+        setImage([]);
+      })
       .catch((e) => {
         toast.error(e.message);
       });
@@ -206,6 +216,7 @@ const CreateGroupPost: FC<CreateGroupPostProps> = ({ onCreatePostSuccess }) => {
             }}
           >
             <Input
+              ref={inputContentRef}
               placeholder={`Bạn viết gì đi...`}
               disableUnderline
               fullWidth
@@ -222,22 +233,32 @@ const CreateGroupPost: FC<CreateGroupPostProps> = ({ onCreatePostSuccess }) => {
               }}
             >
               <input
+                multiple
                 ref={inputRef}
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
-                  const img = e.target.files?.[0];
-                  if (!img) return;
-                  const reader = new FileReader();
-                  reader.onload = (v) => {
-                    setImg(v.target?.result?.toString() || image);
-                  };
-                  reader.readAsDataURL(img);
+                  const imgs = e.target.files;
+                  if (!imgs) return;
+                  const images = new Array(imgs.length).fill(1).map((_, i) => {
+                    return imgs[i];
+                  });
+                  setImage(images);
                 }}
               />
-              <AddPhotoAlternate
-                sx={{ width: 30, height: 30, color: "#41B35D" }}
-              />
+              <Badge
+                badgeContent={image.length}
+                sx={{
+                  ".MuiBadge-standard": {
+                    bgcolor: "#79acb15b",
+                    color: "#000000",
+                  },
+                }}
+              >
+                <AddPhotoAlternate
+                  sx={{ width: 30, height: 30, color: "#41B35D" }}
+                />
+              </Badge>
             </IconButton>
           </Box>
           <Box
@@ -255,7 +276,7 @@ const CreateGroupPost: FC<CreateGroupPostProps> = ({ onCreatePostSuccess }) => {
                 width: "80%",
                 "&:hover": { bgcolor: "#1d6fd4" },
               }}
-              onClick={() => handleCreatePost()}
+              onClick={() => handleCreatePost(image)}
             >
               Đăng
             </Button>

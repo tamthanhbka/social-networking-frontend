@@ -1,14 +1,19 @@
 import {
   AddPhotoAlternate,
   Close,
+  Delete,
+  Edit,
   EmojiEmotionsOutlined,
 } from "@mui/icons-material";
 import {
   Avatar,
+  Badge,
   Box,
   Button,
   IconButton,
   Input,
+  Menu,
+  MenuItem,
   Modal,
   Paper,
   Typography,
@@ -18,7 +23,7 @@ import { FC, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { User } from "./Auth";
-import { createPost } from "../api";
+import { createPost, uploadImgs } from "../api";
 
 import { toast } from "react-toastify";
 
@@ -36,22 +41,26 @@ const CustomButton = styled(Button)({
 const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
-  const [image, setImg] = useState("");
+  const [image, setImage] = useState<File[]>([]);
   const handleClose = () => setOpen(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleOpen = () => {
     setOpen(true);
   };
-  const { mutate: handleCreatePost } = useMutation(() =>
-    createPost(content, image)
+  const { mutate: handleCreatePost } = useMutation(async (imgs: File[]) => {
+    const data = await uploadImgs(imgs);
+    if (!data) return;
+    return createPost(content, data)
       .then(handleClose)
       .then(onCreatePostSuccess)
-      .then(() => setContent(""))
+      .then(() => {
+        setContent("");
+        setImage([]);
+      })
       .catch((e) => {
         toast.error(e.message);
-      })
-  );
-
+      });
+  });
   return (
     <Paper
       elevation={1}
@@ -219,6 +228,7 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
               onChange={(e) => {
                 setContent(e.target.value);
               }}
+              autoFocus
             />
             <IconButton
               sx={{ width: 45, height: 45 }}
@@ -227,22 +237,32 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
               }}
             >
               <input
+                multiple
                 ref={inputRef}
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
-                  const img = e.target.files?.[0];
-                  if (!img) return;
-                  const reader = new FileReader();
-                  reader.onload = (v) => {
-                    setImg(v.target?.result?.toString() || image);
-                  };
-                  reader.readAsDataURL(img);
+                  const imgs = e.target.files;
+                  if (!imgs) return;
+                  const images = new Array(imgs.length).fill(1).map((_, i) => {
+                    return imgs[i];
+                  });
+                  setImage(images);
                 }}
               />
-              <AddPhotoAlternate
-                sx={{ width: 30, height: 30, color: "#41B35D" }}
-              />
+              <Badge
+                badgeContent={image.length}
+                sx={{
+                  ".MuiBadge-standard": {
+                    bgcolor: "#79acb15b",
+                    color: "#000000",
+                  },
+                }}
+              >
+                <AddPhotoAlternate
+                  sx={{ width: 30, height: 30, color: "#41B35D" }}
+                />
+              </Badge>
             </IconButton>
           </Box>
           <Box
@@ -255,7 +275,10 @@ const CreatePost: FC<CreatePostProps> = ({ user, onCreatePostSuccess }) => {
           >
             <CustomButton
               sx={{ bgcolor: "#2077e1", color: "white", width: "80%" }}
-              onClick={() => handleCreatePost()}
+              onClick={() => {
+                if (!image) return;
+                handleCreatePost(image);
+              }}
             >
               Đăng
             </CustomButton>

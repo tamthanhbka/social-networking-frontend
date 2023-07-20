@@ -1,4 +1,6 @@
+import axios from "axios";
 import { axiosInstance, AxiosError } from "./axios";
+import { Cloudinary } from "@cloudinary/url-gen";
 const getAllPosts = async () => {
   const res = await axiosInstance.get("/post/getAllPosts");
   const data = res.data;
@@ -44,20 +46,30 @@ const listFollowedPeople = async () => {
   const data = res.data;
   return data.data;
 };
-const createPost = async (content: string, image: string) => {
+const createPost = async (content: string, images: string[]) => {
   if (!content) throw new Error("Bài viết cần có nội dung hoặc ảnh!");
   const res = await axiosInstance.post(`post/create`, {
     content,
+    images,
   });
   return res.data.data;
 };
-const createPostOfGroup = async (content: string, groupId: string) => {
+const createPostOfGroup = async (
+  content: string,
+  groupId: string,
+  images: string[]
+) => {
   if (!content) throw new Error("Bài viết cần có nội dung hoặc ảnh!");
   const res = await axiosInstance.post(`post/createPostOfGroup`, {
     groupId,
     content,
+    images,
   });
 
+  return res.data.data;
+};
+const isPostOfGroup = async (id: string) => {
+  const res = await axiosInstance.post(`post/isPostOfGroup`, { postId: id });
   return res.data.data;
 };
 const updateInfo = async (info: object) => {
@@ -77,6 +89,33 @@ const getListGroup = async () => {
 const getInfoGroup = async (id?: string) => {
   if (!id) throw new Error("Group not found!");
   const res = await axiosInstance.get(`/group/getInfoGroup/${id}`);
+  const data = res.data;
+  return data.data;
+};
+const getListMember = async (id: string) => {
+  const res = await axiosInstance.get(`/group/getListMember/${id}`);
+  const data = res.data;
+  return data.data;
+};
+const getListRequestJoinGroup = async (id: string) => {
+  const res = await axiosInstance.get(`/group/getListRequestJoinGroup/${id}`);
+  const data = res.data;
+  return data.data;
+};
+const outGroup = async (id: string) => {
+  const res = await axiosInstance.post(`/group/outGroup/${id}`);
+  const data = res.data;
+  return data.data;
+};
+const joinGroup = async (id: string) => {
+  const res = await axiosInstance.post(`/group/joinGroup/${id}`);
+  const data = res.data;
+  return data.data;
+};
+const acceptMember = async (id: string, personId: string) => {
+  const res = await axiosInstance.post(`/group/acceptMember/${id}`, {
+    requestPersonId: personId,
+  });
   const data = res.data;
   return data.data;
 };
@@ -100,6 +139,29 @@ const signup = async (
   const response = await axiosInstance.get("/me");
   return response.data.data;
 };
+const CLOUD_NAME = "dry4uas1f";
+const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+const PRESET = "ylz3qbi1";
+
+const uploadImg = async (file: File) => {
+  // Initial FormData
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", PRESET);
+  formData.append("folder", "tamtam");
+
+  // Make an AJAX upload request using Axios (replace Cloudinary URL below with your own)
+  return axios.post(UPLOAD_URL, formData).then((response) => {
+    const data = response.data;
+    const fileURL = data.secure_url;
+    return fileURL as string;
+  });
+};
+const uploadImgs = async (files: File[]) => {
+  const uploaders = files.map(uploadImg);
+  const data = await axios.all(uploaders);
+  return data;
+};
 export {
   getAllPosts,
   login,
@@ -120,4 +182,12 @@ export {
   createGroup,
   getPostsOfGroup,
   createPostOfGroup,
+  getListMember,
+  outGroup,
+  joinGroup,
+  getListRequestJoinGroup,
+  acceptMember,
+  uploadImg,
+  uploadImgs,
+  isPostOfGroup,
 };

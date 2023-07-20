@@ -13,7 +13,11 @@ const ContactItem: FC<ContactItemProps> = ({ user }) => {
 
   return (
     <Button
-      sx={{ justifyContent: "start", borderRadius: 2 }}
+      sx={{
+        justifyContent: "start",
+        borderRadius: 2,
+        "&:hover": { bgcolor: "#E4E6E9" },
+      }}
       onClick={() => {
         navigate(`profile/${user.id}`);
       }}

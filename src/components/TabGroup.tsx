@@ -1,6 +1,6 @@
 import { Box, Tabs as DefaultTabs, Tab } from "@mui/material";
-import { useState, type FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, type FC, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "./Auth";
 
 interface TabGroupProps {
@@ -15,12 +15,15 @@ function a11yProps(index: number) {
 
 const TabGroup: FC<TabGroupProps> = ({ admin }) => {
   const { user } = useAuth();
+  const { id } = useParams();
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  useEffect(() => {
+    setValue(0);
+  }, [id]);
   return (
     <>
       <Box sx={{ width: "100%" }}>

@@ -40,7 +40,7 @@ const Navbar: FC<NavbarProps> = () => {
         position: "fixed",
         left: 0,
         top: 60,
-        width: "20%",
+        width: "15%",
         height: "calc(100vh - 60px)",
         flexDirection: "column",
         pt: 2,
@@ -70,15 +70,26 @@ const Navbar: FC<NavbarProps> = () => {
           <Link to="/" style={{ width: "100%" }}>
             <Button
               sx={{
+                maxWidth: "100%",
                 width: "100%",
                 bgcolor: "#F0F2F5",
                 justifyContent: "start",
                 color: "#333",
+                borderRadius: 2,
+                "&:hover": { bgcolor: "#E4E6E9" },
+                overflow: "hidden",
+                flexWrap: "nowrap",
               }}
             >
               <Home sx={{ width: 30, height: 30, mr: 2, color: "#056BE1" }} />
               <Typography
-                sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
+                sx={{
+                  fontSize: 14,
+                  fontWeight: 500,
+                  textTransform: "initial",
+                  whiteSpace: "nowrap",
+                  maxWidth: "100%",
+                }}
               >
                 Trang chủ
               </Typography>
@@ -91,6 +102,8 @@ const Navbar: FC<NavbarProps> = () => {
                 bgcolor: "#F0F2F5",
                 justifyContent: "start",
                 color: "#333",
+                borderRadius: 2,
+                "&:hover": { bgcolor: "#E4E6E9" },
               }}
             >
               <Avatar
@@ -123,6 +136,8 @@ const Navbar: FC<NavbarProps> = () => {
               bgcolor: "#F0F2F5",
               justifyContent: "start",
               color: "#333",
+              borderRadius: 2,
+              "&:hover": { bgcolor: "#E4E6E9" },
             }}
           >
             <Collections
@@ -140,7 +155,10 @@ const Navbar: FC<NavbarProps> = () => {
               bgcolor: "#F0F2F5",
               justifyContent: "start",
               color: "#333",
+              borderRadius: 2,
+              "&:hover": { bgcolor: "#E4E6E9" },
             }}
+            onClick={() => navigate(`/profile/${user?.id}/follower`)}
           >
             <Avatar sx={{ width: 30, height: 30, mr: 2, bgcolor: "#D8DADF" }}>
               <People
@@ -162,7 +180,10 @@ const Navbar: FC<NavbarProps> = () => {
               bgcolor: "#F0F2F5",
               justifyContent: "start",
               color: "#333",
+              borderRadius: 2,
+              "&:hover": { bgcolor: "#E4E6E9" },
             }}
+            onClick={() => navigate("/messages")}
           >
             <Message sx={{ width: 30, height: 30, mr: 2, color: "#A538DC" }} />
             <Typography
@@ -193,6 +214,8 @@ const Navbar: FC<NavbarProps> = () => {
                   bgcolor: "#F0F2F5",
                   justifyContent: "start",
                   color: "#333",
+                  borderRadius: 2,
+                  "&:hover": { bgcolor: "#E4E6E9" },
                 }}
                 onClick={() => {
                   navigate(`/group/${group.id}`);

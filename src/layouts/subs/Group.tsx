@@ -1,12 +1,12 @@
 import { Box, Button, Typography } from "@mui/material";
-import type { FC } from "react";
+import { useState, type FC, useEffect, useMemo } from "react";
 import { GroupType } from "../../types";
 import { Edit, PersonAdd } from "@mui/icons-material";
 import { GroupInfo, TabGroup } from "../../components";
 import { Outlet, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getInfoGroup } from "../../api";
-import { useAuth } from "../../components/Auth";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getInfoGroup, getListMember, joinGroup, outGroup } from "../../api";
+import { User, useAuth } from "../../components/Auth";
 
 interface GroupProps {}
 
@@ -17,6 +17,21 @@ const Group: FC<GroupProps> = () => {
     queryKey: [`group${id}`],
     queryFn: () => getInfoGroup(id),
     refetchOnWindowFocus: false,
+  });
+  const { data: listMembers, refetch } = useQuery<User[]>({
+    queryKey: [`members`, `group${id}`],
+    queryFn: () => getListMember(id),
+    initialData: [],
+    refetchOnWindowFocus: false,
+  });
+  const isMember = useMemo(() => {
+    if (!user) return false;
+    const isInclude = listMembers.map((u) => u.id).includes(user.id);
+    return isInclude;
+  }, [listMembers, user]);
+  const { mutate: handleJoinOutGroup } = useMutation(() => {
+    const api = isMember ? outGroup : joinGroup;
+    return api(id).then(() => refetch());
   });
   return (
     <Box
@@ -36,7 +51,7 @@ const Group: FC<GroupProps> = () => {
             alignItems="center"
             gap={1}
           >
-            <GroupInfo group={group} />
+            <GroupInfo group={group} listMember={listMembers} />
             <Box display="flex" flex={1} justifyContent="end" alignItems="end">
               {group?.admin === user?.id ? (
                 <Button
@@ -65,8 +80,7 @@ const Group: FC<GroupProps> = () => {
                     "&:hover": { bgcolor: "#2571ce" },
                   }}
                   onClick={() => {
-                    // const handle = isFollowed ? handleUnfollow : handleFollow;
-                    // handle();
+                    handleJoinOutGroup();
                   }}
                 >
                   <PersonAdd sx={{ color: "#ffffff" }} />
@@ -78,8 +92,7 @@ const Group: FC<GroupProps> = () => {
                       color: "#ffffff",
                     }}
                   >
-                    {/* {isFollowed ? "Bỏ theo dõi" : "Theo dõi"} */}
-                    Tham gia nhóm
+                    {isMember ? "Rời khỏi nhóm" : "Tham gia nhóm"}
                   </Typography>
                 </Button>
               )}
@@ -88,9 +101,7 @@ const Group: FC<GroupProps> = () => {
           <TabGroup admin={group?.admin} />
         </Box>
         <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-          <Box sx={{ width: "80%", justifyItems: "center" }}>
-            <Outlet />
-          </Box>
+          <Outlet />
         </Box>
       </Box>
     </Box>

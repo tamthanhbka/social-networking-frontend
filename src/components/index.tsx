@@ -11,3 +11,6 @@ export { default as GroupInfo } from "./GroupInfo";
 export { default as TabGroup } from "./TabGroup";
 export { default as CreateGroupPost } from "./CreateGroupPost";
 export { default as GroupPost } from "./GroupPost";
+export { default as GroupMember } from "./GroupMember";
+export { default as RequestJoinGroup } from "./RequestJoinGroup";
+export { default as Follower } from "./Follower";

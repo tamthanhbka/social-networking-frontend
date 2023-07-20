@@ -13,12 +13,19 @@ import {
   Box,
   ImageList,
   ImageListItem,
+  Modal,
+  Fade,
+  Menu,
+  MenuItem,
+  ListItemIcon,
 } from "@mui/material";
 import {
   MoreVert,
   FavoriteOutlined,
   SmsOutlined,
   ShareOutlined,
+  Edit,
+  Delete,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import React from "react";
@@ -37,7 +44,7 @@ interface GroupPostProps {
     updatedAt?: string;
     userId: string;
   }[];
-  images: { link: string; createdAt: string }[];
+  images: string[];
   group: GroupType;
 }
 
@@ -85,7 +92,11 @@ const GroupPost: FC<GroupPostProps> = ({
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
   const [expanded, setExpanded] = React.useState(false);
+  const [viewImg, setViewImg] = React.useState<string>();
+  const [openImgView, setOpenImgView] = React.useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -95,6 +106,12 @@ const GroupPost: FC<GroupPostProps> = ({
 
   const handleFavoriteClick = () => {
     setFavorite(!favorite);
+  };
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
   };
   return (
     <Card sx={{ maxWidth: "xl", borderRadius: 3, mb: 3 }}>
@@ -115,9 +132,18 @@ const GroupPost: FC<GroupPostProps> = ({
           </Link>
         }
         action={
-          <IconButton aria-label="settings" sx={{}}>
-            <MoreVert />
-          </IconButton>
+          user?.id == author.id && (
+            <IconButton
+              aria-label="settings"
+              sx={{}}
+              onClick={handleClick}
+              aria-controls={open ? "post-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+            >
+              <MoreVert />
+            </IconButton>
+          )
         }
         title={
           <Typography
@@ -135,11 +161,9 @@ const GroupPost: FC<GroupPostProps> = ({
             <Typography
               sx={{ bgcolor: "#E7F3FF", color: "#1875F0", fontSize: 13, mr: 1 }}
             >
-              {group.admin === user?.id ? "Quan tri vien" : "Thanh vien"}
-            </Typography>{" "}
-            <Typography sx={{ fontSize: 13 }}>
-              {renderTime(createdAt)}
+              {group.admin === author.id ? "Quan tri vien" : "Thanh vien"}
             </Typography>
+            <Box sx={{ fontSize: 13 }}>{renderTime(createdAt)}</Box>
           </Box>
         }
       />
@@ -157,15 +181,40 @@ const GroupPost: FC<GroupPostProps> = ({
           {images.map((item, i) => (
             <ImageListItem key={i} sx={{ border: "1px solid #aaaaaa" }}>
               <img
-                src={`${item.link}`}
-                srcSet={`${item.link}`}
+                src={`${item}`}
+                srcSet={`${item}`}
                 // alt={item.title}
                 loading="lazy"
+                onClick={() => {
+                  setOpenImgView(true);
+                  setViewImg(item);
+                }}
+                style={{ cursor: "pointer" }}
               />
             </ImageListItem>
           ))}
         </ImageList>
       )}
+      <Modal
+        open={openImgView}
+        onClose={() => {
+          setOpenImgView(false);
+          setTimeout(() => {
+            setViewImg(undefined);
+          }, 500);
+        }}
+        closeAfterTransition
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          ".MuiModal-backdrop": { bgcolor: "#0f0e0ef5" },
+        }}
+      >
+        <Fade in={openImgView} timeout={500}>
+          <img src={viewImg} alt="asd" style={{ height: "500px" }} />
+        </Fade>
+      </Modal>
       <Box sx={{ pl: 2, pr: 2 }}>
         <Box
           display="flex"
@@ -213,6 +262,54 @@ const GroupPost: FC<GroupPostProps> = ({
           <ShareOutlined />
         </IconButton>
       </CardActions>
+      <Menu
+        anchorEl={anchorEl}
+        id="post-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: "visible",
+            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+            mt: 1.5,
+            "& .MuiAvatar-root": {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            "&:before": {
+              content: '""',
+              display: "block",
+              position: "absolute",
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: "background.paper",
+              transform: "translateY(-50%) rotate(45deg)",
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem onClick={handleClose}>
+          <ListItemIcon>
+            <Edit fontSize="small" sx={{ mr: 1 }} />
+          </ListItemIcon>
+          Chỉnh sửa bài viết
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <ListItemIcon>
+            <Delete fontSize="small" sx={{ mr: 1 }} />
+          </ListItemIcon>
+          Xóa bài viết
+        </MenuItem>
+      </Menu>
     </Card>
   );
 };

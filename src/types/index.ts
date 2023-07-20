@@ -1,4 +1,5 @@
 export type PostType = {
+  id: string;
   author: { username: string; avatar: string; id: string };
   createdAt: string;
   content: string;
@@ -9,7 +10,7 @@ export type PostType = {
     updatedAt?: string;
     userId: string;
   }[];
-  images: { link: string; createdAt: string }[];
+  images: string[];
 };
 
 export type GroupType = {

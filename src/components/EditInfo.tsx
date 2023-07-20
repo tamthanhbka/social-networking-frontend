@@ -23,7 +23,7 @@ import {
 import { FC, useEffect, useState } from "react";
 import { User, useAuth } from "./Auth";
 import { useMutation } from "@tanstack/react-query";
-import { updateInfo } from "../api";
+import { updateInfo, uploadImg } from "../api";
 
 interface EditInfoProps extends Omit<ModalProps, "children"> {
   onClose?: () => void;
@@ -36,30 +36,22 @@ const EditInfo: FC<EditInfoProps> = (props) => {
   const [openNameEdit, setOpenNameEdit] = useState(false);
   const [openPhoneEdit, setOpenPhoneEdit] = useState(false);
   const [avatar, setAvatar] = useState(props.user.avatar);
+  const [image, setImage] = useState<File>();
   const [phone, setPhone] = useState(props.user.phone);
   const [username, setUsername] = useState(props.user.username);
   const { onClose, user, onUpdateSuccess } = props;
-  const { mutate: handleUpdateInfo } = useMutation(
-    () => {
-      console.log(avatar);
-      return updateInfo({ avatar, phone, username })
-        .then(() => {
-          toast.success("Chỉnh sửa thành công!");
-        })
-        .then(onClose)
-        .then(() => {
-          action.update();
-        })
-        .then(onUpdateSuccess);
-    }
-    // .then(handleClose)
-    // .then(onCreatePostSuccess)
-    // .catch((e) => {
-    //   toast.error(e.message);
-  );
-  // useEffect(() => {
-  //   handleUpdateInfo();
-  // }, [avatar, phone, username]);
+  const { mutate: handleUpdateInfo } = useMutation(async () => {
+    const img = image ? await uploadImg(image) : avatar;
+    return updateInfo({ avatar: img, phone, username })
+      .then(() => {
+        toast.success("Chỉnh sửa thành công!");
+      })
+      .then(onClose)
+      .then(() => {
+        action.update();
+      })
+      .then(onUpdateSuccess);
+  });
   return (
     <Modal
       sx={{ display: "grid", placeItems: "center" }}
@@ -121,6 +113,7 @@ const EditInfo: FC<EditInfoProps> = (props) => {
                 onChange={(e) => {
                   const img = e.target.files?.[0];
                   if (!img) return;
+                  setImage(img);
                   const reader = new FileReader();
                   reader.onload = (v) => {
                     setAvatar(v.target?.result?.toString() || avatar);
