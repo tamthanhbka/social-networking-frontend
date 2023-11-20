@@ -10,7 +10,7 @@ interface SubHomeLayoutProps {}
 const SubHomeLayout: FC<SubHomeLayoutProps> = () => {
   return (
     <>
-      <Box sx={{ ml: 8, flexBasis: 700 }}>
+      <Box sx={{ ml: 24, flexBasis: 700 }}>
         <PostLayout fn={getAllPosts} width="100%" />
       </Box>
       <Contact />

@@ -40,7 +40,7 @@ const Navbar: FC<NavbarProps> = () => {
         position: "fixed",
         left: 0,
         top: 60,
-        width: "15%",
+        width: "17%",
         height: "calc(100vh - 60px)",
         flexDirection: "column",
         pt: 2,
@@ -189,7 +189,7 @@ const Navbar: FC<NavbarProps> = () => {
             <Typography
               sx={{ fontSize: 14, fontWeight: 500, textTransform: "initial" }}
             >
-              Tin nhắn
+              Messenger
             </Typography>
           </Button>
         </Box>

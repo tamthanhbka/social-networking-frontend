@@ -67,7 +67,7 @@ const ProfileLayout: FC<ProfileLayoutProps> = () => {
       display="flex"
       sx={{
         width: "80%",
-        ml: 8,
+        ml: 20,
         minHeight: "100vh",
       }}
     >

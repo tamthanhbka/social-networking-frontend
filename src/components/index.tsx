@@ -14,3 +14,6 @@ export { default as GroupPost } from "./GroupPost";
 export { default as GroupMember } from "./GroupMember";
 export { default as RequestJoinGroup } from "./RequestJoinGroup";
 export { default as Follower } from "./Follower";
+export { default as ListMessageUser } from "./ListMessageUser";
+export { default as MessageBox } from "./MessageBox";
+export { default as Message } from "./Message";

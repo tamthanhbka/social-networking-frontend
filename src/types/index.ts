@@ -20,3 +20,13 @@ export type GroupType = {
   admin: string;
   avatar: string;
 };
+
+export type Chat = {
+  id: string;
+  from: string;
+  to: string;
+  type: "text" | "image" | "video" | "audio" | "file";
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+};

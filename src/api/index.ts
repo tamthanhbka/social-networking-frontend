@@ -119,6 +119,21 @@ const acceptMember = async (id: string, personId: string) => {
   const data = res.data;
   return data.data;
 };
+const getAllChat = async () => {
+  const res = await axiosInstance.get("/chat/getAllChat");
+  return res.data.data;
+};
+const getChat = async (id: string) => {
+  const res = await axiosInstance.get(`/chat/getChat/${id}`);
+  return res.data.data;
+};
+const sendMessage = async (to: string, content: string) => {
+  const res = await axiosInstance.post(`/chat/sendToUser`, {
+    to,
+    content,
+  });
+  return res.data.data;
+};
 const login = async (email: string, password: string) => {
   await axiosInstance.post("/auth/login", { email, password });
   const data = await getMe();
@@ -190,4 +205,7 @@ export {
   uploadImg,
   uploadImgs,
   isPostOfGroup,
+  getAllChat,
+  getChat,
+  sendMessage,
 };

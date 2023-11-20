@@ -24,11 +24,14 @@ const HomeLayout = () => {
       ></div>
     );
   return (
-    <Box flexGrow={1} display="flex" flexDirection="column">
+    <Box flexGrow={1} display="flex" flexDirection="column" height="100%">
       <Header />
-      <Box display="flex" sx={{ bgcolor: "#F0F2F5" }}>
+      <Box
+        display="flex"
+        sx={{ bgcolor: "#F0F2F5", alignItems: "stretch", height: "100%" }}
+      >
         <Nav />
-        <Box display="flex" sx={{ flex: 1, ml: "25%" }}>
+        <Box display="flex" sx={{ flex: 1, ml: "15%" }}>
           <Outlet />
         </Box>
       </Box>

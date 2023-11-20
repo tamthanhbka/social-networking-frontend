@@ -10,8 +10,14 @@ import {
 import { getListPosts, getPosts } from "../api";
 import Group from "../layouts/subs/Group";
 import GroupPostLayout from "../layouts/subs/GroupPost";
-import { Follower, GroupMember, RequestJoinGroup } from "../components";
+import {
+  Follower,
+  GroupMember,
+  MessageBox,
+  RequestJoinGroup,
+} from "../components";
 import MessageLayout from "../layouts/subs/Message";
+import MessageBoxPlaceHolder from "../components/MessageBoxPlaceholder";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +63,16 @@ const router = createBrowserRouter([
       {
         path: "/messages",
         element: <MessageLayout />,
+        children: [
+          {
+            path: "",
+            element: <MessageBoxPlaceHolder />,
+          },
+          {
+            path: ":id",
+            element: <MessageBox />,
+          },
+        ],
       },
       {
         path: "/",
